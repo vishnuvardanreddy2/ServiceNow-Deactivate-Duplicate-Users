@@ -1,0 +1,32 @@
+# ServiceNow Deactivate Duplicate Users
+
+## Project Overview
+This project automates the process of identifying and deactivating duplicate users in the ServiceNow platform based on their email address.
+
+## Problem Statement
+- Users with duplicate emails should be deactivated.
+- The solution automates this process to ensure data consistency.
+
+## Steps
+1. Query the `sys_user` table for active users.
+2. Check the email addresses for duplicates.
+3. Deactivate users with duplicate emails, except the first one.
+
+## Script
+
+```javascript
+// Query to get all active users
+var gr = new GlideRecord('sys_user');
+gr.addQuery('active', true);  // Only active users
+gr.query();
+var emailMap = {};
+
+while (gr.next()) {
+    var email = gr.email;
+    if (emailMap[email]) {
+        gr.active = false;  // Deactivate the duplicate user
+        gr.update();
+    } else {
+        emailMap[email] = true;
+    }
+}
